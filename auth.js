@@ -21,10 +21,10 @@ router.post('/login', async (req, res) => {
         console.log(isMatch);
         if (!isMatch)
             return res.status(401).send({message: 'no such password'});
-        var payload = {};
+        var payload = {sub:user.id};
         var token = jwt.encode(payload, '123')
         console.log(token)
-        res.status(200).send({token})
+        res.status(200).sen({token})
     })
 })
 

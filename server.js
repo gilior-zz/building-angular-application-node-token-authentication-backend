@@ -17,13 +17,16 @@ app.use(cors())
 app.use(pars.json())
 
 
-app.get('/posts', (req, res) => {
+app.get('/posts/:id', async (req, res) => {
+        var author = req.params.id;
+        var posts = await Post.find({author})
         res.send(posts)
     }
 )
 
 app.post('/post', (req, res) => {
     var post = new Post(req.body);
+    post.author = '5a1aa6239d51c30f54ea58a6';
     post.save((err, res) => {
         if (err) {
             console.error('err on save post')
