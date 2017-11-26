@@ -5,14 +5,33 @@ var express = require('express')
 
 var router = express.Router();
 
+
 router.post('/register', (req, res) => {
     var user = new User(req.body)
-    user.save((err, res) => {
+    user.save((err, newUser) => {
         if (err)
-            console.log('err on save user')
+            return res.status(401).send({message: 'err on save'});
+        else{
+
+            var payload = {sub: newUser.id};
+            var token = jwt.encode(payload, '123')
+            console.log(token)
+            res.status(200).send({token})
+        }
     })
-    res.sendStatus(200)
+
 })
+
+var auth = {
+    checkAuth:  (req, res, next)=>   {
+        if (!req.header('auth')) return res.status(401).send({message: 'no auth'})
+        var token = req.header('auth');
+        token = jwt.decode(token, '123');
+        req.userId = token;
+        next();
+    },
+    router:router
+}
 router.post('/login', async (req, res) => {
     var user = await User.findOne({email: req.body.email});
     console.log(user);
@@ -21,11 +40,11 @@ router.post('/login', async (req, res) => {
         console.log(isMatch);
         if (!isMatch)
             return res.status(401).send({message: 'no such password'});
-        var payload = {sub:user.id};
+        var payload = {sub: user.id};
         var token = jwt.encode(payload, '123')
         console.log(token)
-        res.status(200).sen({token})
+        res.status(200).send({token})
     })
 })
 
-module.exports=router;
+module.exports = auth;

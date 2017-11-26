@@ -3,6 +3,7 @@ var cors = require('cors')
 var pars = require('body-parser')
 var mngs = require('mongoose');
 var auth = require('./auth.js')
+var jwt = require('jwt-simple');
 mngs.promise = Promise;
 var User = require('./models/users.js')
 var Post = require('./models/Post.js')
@@ -17,6 +18,8 @@ app.use(cors())
 app.use(pars.json())
 
 
+
+
 app.get('/posts/:id', async (req, res) => {
         var author = req.params.id;
         var posts = await Post.find({author})
@@ -24,9 +27,10 @@ app.get('/posts/:id', async (req, res) => {
     }
 )
 
-app.post('/post', (req, res) => {
+app.post('/post', auth.checkAuth, (req, res) => {
     var post = new Post(req.body);
-    post.author = '5a1aa6239d51c30f54ea58a6';
+
+    post.author = req.userId;
     post.save((err, res) => {
         if (err) {
             console.error('err on save post')
@@ -66,5 +70,5 @@ mngs.connect('mongodb://lg1:JKDH098(&@ds117336.mlab.com:17336/lgdb', {useMongoCl
         console.log('mng connected')
 })
 
-app.use('/auth', auth)
+app.use('/auth', auth.router)
 app.listen(3000)
