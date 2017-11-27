@@ -71,4 +71,4 @@ mngs.connect('mongodb://lg1:JKDH098(&@ds117336.mlab.com:17336/lgdb', {useMongoCl
 })
 
 app.use('/auth', auth.router)
-app.listen(3000)
+app.listen(process.env.Port|| 3000)
